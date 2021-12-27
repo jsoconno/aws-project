@@ -1,5 +1,15 @@
 name: terraform
 
+on: 
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'  
+
 deploy:
     name: Test
     runs-on: ubuntu-latest
