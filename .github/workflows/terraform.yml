@@ -28,4 +28,15 @@ jobs:
       - name: Run Terraform Init
         run: |
           terraform init
+
+      - name: Run Terraform Plan
+        run: |
           terraform plan -out current.tfplan
+
+      - name: Run Terraform Apply
+        run: |
+          terraform apply current.tfplan
+
+      - name: Run Terraform Destroy
+        run: |
+          terraform destroy
