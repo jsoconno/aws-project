@@ -23,6 +23,7 @@ jobs:
 
       - name: Run Terraform
         run: |
-          git config --global url."https://oauth2:${{ secrets.PAT_TOKEN }}@github.com".insteadOf "https://github.com/"
           terraform init
           terraform plan -out current.tfplan
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
