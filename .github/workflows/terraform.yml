@@ -23,6 +23,9 @@ jobs:
 
       - name: Run Terraform
         run: |
+          git config --global user.name "jsoconno"
+          git config --global user.email "${{ secret.PAT_TOKEN }}"
+          git config -l
           terraform init
           terraform plan -out current.tfplan
         env:
