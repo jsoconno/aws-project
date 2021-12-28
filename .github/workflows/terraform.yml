@@ -23,4 +23,5 @@ jobs:
 
       - name: Run Terraform
         run: |
-          terraform --version
+          terraform init
+          terraform plan -out current.tfplan
