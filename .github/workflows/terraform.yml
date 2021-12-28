@@ -21,8 +21,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Run Terraform
+      - name: Configure Git to use Personal Access Token
         run: |
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Run Terraform Init
+        run: |
           terraform init
           terraform plan -out current.tfplan
