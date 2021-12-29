@@ -38,5 +38,6 @@ jobs:
           terraform apply current.tfplan
 
       - name: Run Terraform Destroy
+        if: always()
         run: |
           terraform destroy -auto-approve
