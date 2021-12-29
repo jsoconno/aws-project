@@ -1,7 +1,7 @@
 variable "region" {
   type        = string
   description = "The region where resources will be deployed as part of the Terraform configuration."
-  default = "us-east-1"
+  default     = "us-east-1"
 }
 
 variable "tags" {

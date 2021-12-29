@@ -1,3 +1,3 @@
 tags = {
-    environment = "development"
+  environment = "development"
 }
