@@ -1,6 +1,6 @@
 name: terraform
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   deploy:
@@ -38,5 +38,6 @@ jobs:
           terraform apply current.tfplan
 
       - name: Run Terraform Destroy
+        if: always()
         run: |
           terraform destroy -auto-approve
