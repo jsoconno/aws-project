@@ -1,9 +1,9 @@
 name: Terraform Module Dependencies
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    # runs the pipeline every hour on the hour
+    - cron:  '0 * * * *'
 
 jobs:
   terradepend:
