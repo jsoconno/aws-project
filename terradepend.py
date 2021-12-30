@@ -15,22 +15,23 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-def get_terraform_module_dependencies(path, pattern=r"module[^\S\n\t]+?\"(.*)\"[^\S\n\t]{.*?\n.*source[^\S\n\t]+?=[^\S\n\t]+?\"(.*)/(.*)/(.*)\?ref=(.*)\""):
+def get_terraform_module_dependencies(path, pattern=r"(module[^\S\n\t]+?\"(.*)\"[^\S\n\t]{.*?\n.*source[^\S\n\t]+?=[^\S\n\t]+?\"(.*)/(.*)/(.*)\?ref=(.*)\")"):
     with open(path) as f:
         path = Path(path)
         contents = f.read()
-        result = re.findall(pattern, contents)
+        results = re.findall(pattern, contents)
         dependencies = []
 
-        for result in result:
+        for result in results:
             dependency = {
                 "file_path": path,
                 "filename": path.name,
-                "module": result[0],
-                "domain": result[1],
-                "user": result[2],
-                "repo": result[3],
-                "ref": result[4]
+                "module_ref": result[0],
+                "module": result[1],
+                "domain": result[2],
+                "user": result[3],
+                "repo": result[4],
+                "ref": result[5]
             }
             dependencies.append(dependency)
     
@@ -70,6 +71,19 @@ def get_semantic_version_components(git_tag):
 
     return components
 
+def update_git_tag_ref(file_path, module_ref, current_tag, latest_tag):
+    # Read in the file
+    with open(file_path, 'r') as f:
+        data = f.read()
+
+    # Replace the target string
+    new_module_ref = module_ref.replace(current_tag, latest_tag)
+    data = data.replace(module_ref, new_module_ref)
+
+    # Write the file out again
+    with open(file_path, 'w') as f:
+        f.write(data)
+
 token = os.environ["PAT_TOKEN"]
 
 terraform_folder_path = Path(__file__).parent
@@ -78,8 +92,12 @@ terraform_files = [str(x) for x in terraform_folder_path.glob('*.tf') if x.is_fi
 for f in terraform_files:
     dependencies = get_terraform_module_dependencies(f)
 
+    print(dependencies)
+
     for dependency in dependencies:
+        file_path=dependency["file_path"]
         filename = dependency["filename"]
+        module_ref=dependency["module_ref"]
         module = dependency["module"]
         user = dependency["user"]
         repo = dependency["repo"]
@@ -91,10 +109,30 @@ for f in terraform_files:
         else:
             if current_tag["major"] != latest_tag["major"]:
                 print(f'{bcolors.WARNING}MAJOR: The {module} in {filename} is behind by a major version.  {current_tag["git_tag"]} -> {latest_tag["git_tag"]} (latest).{bcolors.ENDC}')
+                update_git_tag_ref(
+                    file_path=file_path, 
+                    module_ref=module_ref,
+                    current_tag=current_tag["git_tag"],
+                    latest_tag=latest_tag["git_tag"]
+                )
             elif current_tag["minor"] != latest_tag["minor"]:
                 print(f'{bcolors.FAIL}MINOR: The module {module} in {filename} is behind by a minor version.  {current_tag["git_tag"]} -> {latest_tag["git_tag"]} (latest).{bcolors.ENDC}')
+                update_git_tag_ref(
+                    file_path=file_path, 
+                    module_ref=module_ref,
+                    current_tag=current_tag["git_tag"],
+                    latest_tag=latest_tag["git_tag"]
+                )
             elif current_tag["patch"] != latest_tag["patch"]:
                 print(f'{bcolors.FAIL}PATCH: The module {module} in {filename} is behind by a patch version.  {current_tag["git_tag"]} -> {latest_tag["git_tag"]} (latest).{bcolors.ENDC}')
+                update_git_tag_ref(
+                    file_path=file_path, 
+                    module_ref=module_ref,
+                    current_tag=current_tag["git_tag"],
+                    latest_tag=latest_tag["git_tag"]
+                )
+
+                print(module_ref)
             elif current_tag["pre_release"] != latest_tag["pre_release"]:
                 print(f'{bcolors.OKGREEN}PRE-RELEASE: There is a pre-release available for module {module} in {filename}.  Consider experimenting with {latest_tag["git_tag"]}.{bcolors.ENDC}')
             else:

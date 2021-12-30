@@ -11,14 +11,19 @@ jobs:
     name: "Check that current module version references are current."
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content to github runner.
+        uses: actions/checkout@v2
       - name: setup python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8 #install the python needed
-      - name: execute py script # run the run.py to get the latest data
+          python-version: 3.8
+      - name: execute py script
         run: |
           pip install requests
-          python utility.py
+          python terradepend.py
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} # if run.py requires passwords..etc,
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          add-paths: |
+            *.tf
