@@ -131,8 +131,6 @@ for f in terraform_files:
                     current_tag=current_tag["git_tag"],
                     latest_tag=latest_tag["git_tag"]
                 )
-
-                print(module_ref)
             elif current_tag["pre_release"] != latest_tag["pre_release"]:
                 print(f'{bcolors.OKGREEN}PRE-RELEASE: There is a pre-release available for module {module} in {filename}.  Consider experimenting with {latest_tag["git_tag"]}.{bcolors.ENDC}')
             else:

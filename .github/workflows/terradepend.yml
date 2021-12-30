@@ -8,15 +8,15 @@ on:
 jobs:
   terradepend:
     runs-on: ubuntu-latest
-    name: "Check that current module version references are current."
+    name: "Automated Module Version Updates"
     steps:
-      - name: checkout repo content
+      - name: Checkout Repo Content
         uses: actions/checkout@v2
-      - name: setup python
+      - name: Set Up Agent
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: execute py script
+      - name: Update Terraform Dependencies
         run: |
           pip install requests
           python terradepend.py
@@ -25,5 +25,15 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
+          commit-message: "Update Terraform module versions."
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          branch: module-version-updates
+          delete-branch: true
+          title: 'Terraform module version updates'
+          labels: |
+            bot
+          body: |
+            Module versions were automatically updated based on the latest versions available.
           add-paths: |
             *.tf
