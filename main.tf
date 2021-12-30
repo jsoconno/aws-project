@@ -37,8 +37,8 @@ locals {
 }
 
 module "api_gateway" {
-  source = "github.com/jsoconno/terraform-module-aws-api-gateway?ref=v1.0.0"
-  #   source = "../terraform-module-aws-api-gateway"
+  source = "github.com/jsoconno/terraform-module-aws-api-gateway?ref=v1.0.2"
+    # source = "../terraform-module-aws-api-gateway"
 
   name = "test-api-gateway"
   body = local.body
@@ -47,7 +47,7 @@ module "api_gateway" {
 }
 
 module "lambda" {
-  source = "github.com/jsoconno/terraform-module-aws-lambda?ref=v1.1.1"
+  source = "github.com/jsoconno/terraform-module-aws-lambda?ref=v1.1.2"
   #   source = "../terraform-module-aws-lambda"
 
   name = "test-lambda"
@@ -61,50 +61,16 @@ module "lambda" {
     module.api_gateway.execution_arn
   ]
 
-  # Something to consider adding later
-  #   s3_bucket_target_arns = [
-
-  #   ]
-
   tags = var.tags
 }
 
 module "s3" {
-  source = "github.com/jsoconno/terraform-module-aws-s3?ref=v1.0.0"
+  source = "github.com/jsoconno/terraform-module-aws-s3?ref=v1.1.0"
+# source = "../terraform-module-aws-s3"
+
+  s3_access_iam_role_names = [
+      module.lambda.role_name
+  ]
 
   tags = var.tags
-}
-
-data "aws_iam_policy_document" "allow_access_s3" {
-  statement {
-    sid    = "AllowAccessToListBucket"
-    effect = "Allow"
-    actions = [
-      "s3:ListBucket"
-    ]
-    resources = [
-      module.s3.arn
-    ]
-  }
-
-  statement {
-    sid    = "AllowAccessToPutObject"
-    effect = "Allow"
-    actions = [
-      "s3:PutObject"
-    ]
-    resources = [
-      "${module.s3.arn}/*"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "allow_access_s3" {
-  name   = "${module.lambda.name}-s3-access"
-  policy = data.aws_iam_policy_document.allow_access_s3.json
-}
-
-resource "aws_iam_role_policy_attachment" "allow_access_s3" {
-  role       = module.lambda.role_name
-  policy_arn = aws_iam_policy.allow_access_s3.arn
 }

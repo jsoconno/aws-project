@@ -1,0 +1,23 @@
+name: Terraform Module Dependencies
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terradepend:
+    runs-on: ubuntu-latest
+    name: "Check that current module version references are current."
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner.
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8 #install the python needed
+      - name: execute py script # run the run.py to get the latest data
+        run: |
+          python utility.py
+        env:
+          key: ${{ secrets.PAT_TOKEN }} # if run.py requires passwords..etc,
