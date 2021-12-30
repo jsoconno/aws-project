@@ -37,7 +37,7 @@ locals {
 }
 
 module "api_gateway" {
-  source = "github.com/jsoconno/terraform-module-aws-api-gateway?ref=v1.0.0"
+  source = "github.com/jsoconno/terraform-module-aws-api-gateway?ref=v1.0.2"
     # source = "../terraform-module-aws-api-gateway"
 
   name = "test-api-gateway"
@@ -47,7 +47,7 @@ module "api_gateway" {
 }
 
 module "lambda" {
-  source = "github.com/jsoconno/terraform-module-aws-lambda?ref=v1.1.0"
+  source = "github.com/jsoconno/terraform-module-aws-lambda?ref=v1.1.2"
   #   source = "../terraform-module-aws-lambda"
 
   name = "test-lambda"
