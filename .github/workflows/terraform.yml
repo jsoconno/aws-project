@@ -1,4 +1,4 @@
-name: terraform
+name: Terraform Testing
 
 on: [pull_request]
 
