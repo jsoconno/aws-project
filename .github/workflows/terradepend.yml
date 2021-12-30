@@ -18,6 +18,7 @@ jobs:
           python-version: 3.8 #install the python needed
       - name: execute py script # run the run.py to get the latest data
         run: |
+          pip install requests
           python utility.py
         env:
           key: ${{ secrets.PAT_TOKEN }} # if run.py requires passwords..etc,
