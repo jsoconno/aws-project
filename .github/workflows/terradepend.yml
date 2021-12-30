@@ -21,4 +21,4 @@ jobs:
           pip install requests
           python utility.py
         env:
-          key: ${{ secrets.PAT_TOKEN }} # if run.py requires passwords..etc,
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} # if run.py requires passwords..etc,
