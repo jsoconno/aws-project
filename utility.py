@@ -70,7 +70,7 @@ def get_semantic_version_components(git_tag):
 
     return components
 
-token = os.environ("PAT_TOKEN")
+token = os.environ["PAT_TOKEN"]
 
 terraform_folder_path = Path(__file__).parent
 terraform_files = [str(x) for x in terraform_folder_path.glob('*.tf') if x.is_file()]
