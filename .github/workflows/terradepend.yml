@@ -3,7 +3,7 @@ name: Terraform Module Dependencies
 on:
   schedule:
     # runs the pipeline every hour on the hour
-    - cron:  '0 * * * *'
+    - cron:  '0 */24 * * *'
 
 jobs:
   terradepend:
