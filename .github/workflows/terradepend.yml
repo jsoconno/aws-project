@@ -1,4 +1,4 @@
-name: Terraform Module Dependencies
+name: Terraform Dependency Manager
 
 on:
   schedule:
