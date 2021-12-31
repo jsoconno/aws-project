@@ -15,7 +15,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-def get_terraform_module_dependencies(path, pattern=r"(module[\s]*\"(.*)\"[\s]*{[\s]*.*?\n.*source[\s]*=[\s]*\"(.*)/(.*)/(.*)\?ref=(.*)\")[\s]*#?[\s]*[\s]*(Ignore)?"):
+def get_terraform_module_dependencies(path, pattern=r"(module[\s]*\"(.*)\"[\s]*{[\s]*.*?\n.*source[\s]*=[\s]*\"(.*)/(.*)/(.*)\?ref=(.*)\")[\s]*#?[\s]*[\s]*(Pin Version)?"):
     with open(path) as f:
         path = Path(path)
         contents = f.read()
@@ -38,7 +38,7 @@ def get_terraform_module_dependencies(path, pattern=r"(module[\s]*\"(.*)\"[\s]*{
     
     return dependencies
 
-def get_tags(user, repo, token, field=None, regex_pattern=None, group_number=0):
+def get_github_git_tags(user, repo, token):
     """
     Get tags from GitHub repo.
     """
@@ -50,6 +50,32 @@ def get_tags(user, repo, token, field=None, regex_pattern=None, group_number=0):
     tag_list = [x["name"] for x in tag_data]
 
     return tag_list
+
+def get_terraform_provider_versions(provider):
+    response = requests.get(f"https://registry.terraform.io/v1/providers/hashicorp/{provider}")
+    data = json.loads(response.text)
+    
+    return data["versions"]
+
+def get_terraform_provider_dependencies(path, pattern=r'terraform[\s]*{[\s]*required_version[\s]*=[\s]*\"(.*)\"[\s\S]*required_providers[\s]*{[\s]*(\S*).*{[\s\S]*source[\s]*=[\s]*\"(\S*)[\s\S]*version[\s]*=[\s]*\"(.*)\"[\s\S]*}'):
+    with open(path) as f:
+        path = Path(path)
+        contents = f.read()
+        results = re.findall(pattern, contents)
+        dependencies = []
+
+        for result in results:
+            dependency = {
+                "file_path": path,
+                "filename": path.name,
+                "terraform_required_version": result[0],
+                "required_provider": result[1],
+                "required_provider_source": result[2],
+                "required_provider_version": result[3]
+            }
+            dependencies.append(dependency)
+    
+    return dependencies
 
 def get_semantic_version_components(git_tag):
     regex_pattern = r"(\d*)\.(\d*)\.(\d*)[^a-zA-Z\d\s:]?(.*)"
@@ -140,6 +166,8 @@ allow_major_updates = False
 allow_minor_updates = True
 allow_patch_updates = True
 
+print(f'Major version updates are set to {allow_major_updates}, minor version updates are set to {allow_minor_updates}, and patch version updates are set to {allow_patch_updates}.  To modify this behavior, update your configuration.  By default, minor and patch updates are enabled.')
+
 terraform_folder_path = Path(__file__).parent
 terraform_files = [str(x) for x in terraform_folder_path.glob('*.tf') if x.is_file()]
 
@@ -155,13 +183,25 @@ for f in terraform_files:
         repo = dependency["repo"]
         flag = dependency["flag"]
         current_tag = get_semantic_version_components(dependency["ref"])
-        repo_tag_list = get_tags(user, repo, token=token, field="name")
+        repo_tag_list = get_github_git_tags(user, repo, token=token)
         latest_tag = get_semantic_version_components(repo_tag_list[0])
 
         latest_allowed_tag = get_next_tag(current_tag, latest_tag, repo_tag_list, allow_major_updates, allow_minor_updates, allow_patch_updates)
 
         if latest_allowed_tag == current_tag["git_tag"]:
             print(f'{bcolors.OKGREEN}The module {module} in file {filename} is using the latest version ({current_tag["git_tag"]}).{bcolors.ENDC}')
+        elif flag == "Pin Version":
+            print(f'{bcolors.WARNING}The module {module} in file {filename} is pinned to version {current_tag["git_tag"]}.  Not updating to {latest_allowed_tag}.{bcolors.ENDC}')
         else:
             print(f'{bcolors.FAIL}The module {module} in file {filename} is not using the latest allowed version (Bumping from {current_tag["git_tag"]} -> {latest_allowed_tag}).{bcolors.ENDC}')
             update_git_tag_ref(file_path, module_ref, current_tag["git_tag"], latest_allowed_tag)
+
+
+# Working on next step to check terraform provider versions
+# latest_provider = get_terraform_provider_versions(provider="aws")[-1]
+# print(latest_provider)
+
+# for f in terraform_files:
+#     dependencies = get_terraform_provider_dependencies(f)
+
+#     print(dependencies)
