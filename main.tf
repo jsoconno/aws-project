@@ -37,7 +37,7 @@ locals {
 }
 
 module "api_gateway" {
-  source = "github.com/jsoconno/terraform-module-aws-api-gateway?ref=v1.0.0"
+  source = "github.com/jsoconno/terraform-module-aws-api-gateway?ref=v1.0.2"
     # source = "../terraform-module-aws-api-gateway"
 
   name = "test-api-gateway"
@@ -65,7 +65,7 @@ module "lambda" {
 }
 
 module "s3" {
-  source = "github.com/jsoconno/terraform-module-aws-s3?ref=v1.0.0"
+  source = "github.com/jsoconno/terraform-module-aws-s3?ref=v1.1.0"
 # source = "../terraform-module-aws-s3"
 
   s3_access_iam_role_names = [
