@@ -52,14 +52,15 @@
 
 #   name = "test-lambda"
 
+#   handler = "main_dynamodb.lambda_handler"
+
 #   environment_variables = {
-#     REGION = data.aws_region.current.name
-#     BUCKET = module.s3.id
+#     TABLE_NAME = module.dynamodb.name
 #   }
 
-#   api_gateway_source_arns = [
-#     module.api_gateway.execution_arn
-#   ]
+#   # api_gateway_source_arns = [
+#   #   module.api_gateway.execution_arn
+#   # ]
 
 #   tags = var.tags
 # }
@@ -75,16 +76,20 @@
 #   tags = var.tags
 # }
 
-module "dynamodb" {
-  source = "../terraform-module-aws-dynamodb"
+# module "dynamodb" {
+#   source = "../terraform-module-aws-dynamodb"
 
-  name = "first-db"
-  billing_mode = "AUTOSCALED"
-  hash_key = {
-    name = "UserId"
-    type = "S"
-  }
+#   name = "first-db"
+#   billing_mode = "AUTOSCALED"
 
-  tags = var.tags
+#   hash_key = {
+#     name = "UserId"
+#     type = "S"
+#   }
 
-}
+#   dynamodb_access_iam_role_names = [
+#       module.lambda.role_name
+#   ]
+
+#   tags = var.tags
+# }
