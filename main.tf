@@ -77,10 +77,10 @@ module "lambda" {
 # }
 
 module "dynamodb" {
-  source = "../terraform-module-aws-dynamodb"
+  source = "github.com/jsoconno/terraform-module-aws-dynamodb?ref=v1.1.0"
 
   name = "first-db"
-  billing_mode = "PROVISIONED"
+  billing_mode = "AUTOSCALED"
 
   hash_key = {
     name = "UserId"
