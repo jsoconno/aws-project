@@ -46,24 +46,24 @@
 #   tags = var.tags
 # }
 
-# module "lambda" {
-#   source = "github.com/jsoconno/terraform-module-aws-lambda?ref=v1.1.2"
-#   #   source = "../terraform-module-aws-lambda"
+module "lambda" {
+  source = "github.com/jsoconno/terraform-module-aws-lambda?ref=v1.1.2"
+  #   source = "../terraform-module-aws-lambda"
 
-#   name = "test-lambda"
+  name = "test-lambda"
 
-#   handler = "main_dynamodb.lambda_handler"
+  handler = "main_dynamodb.lambda_handler"
 
-#   environment_variables = {
-#     TABLE_NAME = module.dynamodb.name
-#   }
+  environment_variables = {
+    TABLE_NAME = module.dynamodb.name
+  }
 
-#   # api_gateway_source_arns = [
-#   #   module.api_gateway.execution_arn
-#   # ]
+  # api_gateway_source_arns = [
+  #   module.api_gateway.execution_arn
+  # ]
 
-#   tags = var.tags
-# }
+  tags = var.tags
+}
 
 # module "s3" {
 #   source = "github.com/jsoconno/terraform-module-aws-s3?ref=v1.1.0"
@@ -76,20 +76,20 @@
 #   tags = var.tags
 # }
 
-# module "dynamodb" {
-#   source = "../terraform-module-aws-dynamodb"
+module "dynamodb" {
+  source = "../terraform-module-aws-dynamodb"
 
-#   name = "first-db"
-#   billing_mode = "AUTOSCALED"
+  name = "first-db"
+  billing_mode = "PROVISIONED"
 
-#   hash_key = {
-#     name = "UserId"
-#     type = "S"
-#   }
+  hash_key = {
+    name = "UserId"
+    type = "S"
+  }
 
-#   dynamodb_access_iam_role_names = [
-#       module.lambda.role_name
-#   ]
+  dynamodb_access_iam_role_names = [
+      module.lambda.role_name
+  ]
 
-#   tags = var.tags
-# }
+  tags = var.tags
+}
