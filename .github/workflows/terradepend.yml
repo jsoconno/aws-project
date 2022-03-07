@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Repo Content
         uses: actions/checkout@v2
       - name: Set Up Agent
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - name: Update Terraform Dependencies
