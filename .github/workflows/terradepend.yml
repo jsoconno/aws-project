@@ -15,7 +15,7 @@ jobs:
       - name: Set Up Agent
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.14
       - name: Update Terraform Dependencies
         run: |
           pip install requests
